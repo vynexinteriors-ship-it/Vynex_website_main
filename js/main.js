@@ -270,11 +270,11 @@ leadForms.forEach((form) => {
 
     try {
       // Send to Google Sheets as JSON (matches your Apps Script)
-      // Note: Using 'no-cors' mode restricts response access but allows the request.
-      // Ensure your Google Apps Script is configured to handle CORS properly.
+      // Note: Changed from 'no-cors' to 'cors' for better compatibility with Vercel
+      // Ensure your Google Apps Script has CORS enabled for your Vercel domain
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -282,26 +282,37 @@ leadForms.forEach((form) => {
           name: name,
           phone: phone,
           city: city,
-          source: window.location.pathname || 'index.html',
+          source: window.location.hostname + (window.location.pathname || '/index.html'),
           timestamp: new Date().toISOString()
         })
       });
 
-      // With 'no-cors', we can't check response.ok, so assume success if no error thrown
-      showNotification(
-        `Thank you, ${name}! We'll contact you shortly at ${phone} regarding your ${city} project.`,
-        "success"
-      );
-
-      // Reset form
-      form.reset();
+      // Check if response is successful
+      if (response.ok) {
+        showNotification(
+          `Thank you, ${name}! We'll contact you shortly at ${phone} regarding your ${city} project.`,
+          "success"
+        );
+        form.reset();
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
     } catch (error) {
       console.error('Form submission error:', error);
-      showNotification(
-        "Something went wrong. Please try calling us at +91-63023 95821",
-        "error"
-      );
+
+      // Provide more specific error messages
+      if (error.message.includes('CORS') || error.message.includes('NetworkError')) {
+        showNotification(
+          "Connection issue. Please check your internet or try again later.",
+          "error"
+        );
+      } else {
+        showNotification(
+          "Something went wrong. Please try calling us at +91-63023 95821",
+          "error"
+        );
+      }
     } finally {
       // Restore button
       submitBtn.disabled = false;
