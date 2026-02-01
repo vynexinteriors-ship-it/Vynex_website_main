@@ -112,108 +112,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 });
 
 // ============================================
-// FORM SUBMISSION HANDLER
-// ============================================
-
-const leadForms = document.querySelectorAll(".lead-form");
-
-leadForms.forEach((form) => {
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    // Get form data
-    const formData = new FormData(form);
-    const name = formData.get("name");
-    const phone = formData.get("phone");
-    const city = formData.get("city");
-
-    // Basic validation
-    if (!name || !phone || !city) {
-      showNotification("Please fill in all fields", "error");
-      return;
-    }
-
-    // Name validation (at least 2 characters)
-    if (name.trim().length < 2) {
-      showNotification("Please enter a valid name", "error");
-      return;
-    }
-
-    // Phone validation (Indian format: 10 digits starting with 6-9)
-    const cleanPhone = phone.replace(/\s+/g, "").replace(/[^0-9]/g, "");
-    const phoneRegex = /^[6-9]\d{9}$/;
-
-    if (!phoneRegex.test(cleanPhone)) {
-      showNotification(
-        "Please enter a valid 10-digit phone number",
-        "error"
-      );
-      return;
-    }
-
-    // City validation
-    if (city.trim().length < 2) {
-      showNotification("Please enter a valid city name", "error");
-      return;
-    }
-
-    // Show loading state
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting...";
-
-    // Simulate API call (replace with actual endpoint)
-    setTimeout(() => {
-      // Success feedback
-      showNotification(
-        `Thank you, ${name}! We'll contact you shortly at ${cleanPhone} regarding your ${city} project.`,
-        "success"
-      );
-
-      // Reset form
-      form.reset();
-
-      // Restore button
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalBtnText;
-
-      // TODO: Replace with actual API call
-      /*
-      fetch('/api/consultation', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          name: name.trim(), 
-          phone: cleanPhone, 
-          city: city.trim(),
-          timestamp: new Date().toISOString()
-        })
-      })
-      .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
-      .then(data => {
-        showNotification('Success! We will contact you soon.', 'success');
-        form.reset();
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showNotification('Something went wrong. Please try again.', 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-      });
-      */
-    }, 1500);
-  });
-});
-
-// ============================================
 // NOTIFICATION SYSTEM
 // ============================================
 
@@ -285,6 +183,110 @@ function showNotification(message, type = "info") {
 }
 
 // ============================================
+// DEBOUNCE UTILITY FUNCTION
+// ============================================
+
+function debounce(func, wait = 10, immediate = false) {
+  let timeout;
+  return function executedFunction() {
+    const context = this;
+    const args = arguments;
+
+    const later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+
+    if (callNow) func.apply(context, args);
+  };
+}
+
+// ============================================
+// FORM SUBMISSION TO GOOGLE SHEETS
+// ============================================
+
+// 🔴 REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4sJwP6FEhwQJrs8pkcoyBo26Kf3-JJTmwcD09G5_cxdW3FaGgGbXWoZiX3MUQwl2J/exec';
+
+const leadForms = document.querySelectorAll(".lead-form");
+
+leadForms.forEach((form) => {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Get form data
+    const formData = new FormData(form);
+    const name = formData.get("name").trim();
+    const phone = formData.get("phone").replace(/\D/g, "");
+    const city = formData.get("city").trim();
+
+    // Validation
+    if (!name || name.length < 2) {
+      showNotification("Please enter a valid name", "error");
+      return;
+    }
+
+    if (phone.length !== 10 || !/^[6-9]/.test(phone)) {
+      showNotification("Please enter a valid 10-digit phone number", "error");
+      return;
+    }
+
+    if (!city || city.length < 2) {
+      showNotification("Please enter a valid city name", "error");
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    try {
+      // Send to Google Sheets
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          phone: phone,
+          city: city,
+          source: window.location.pathname || 'index.html',
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      // Success message
+      showNotification(
+        `Thank you, ${name}! We'll contact you shortly at ${phone} regarding your ${city} project.`,
+        "success"
+      );
+
+      // Reset form
+      form.reset();
+
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification(
+        "Something went wrong. Please try calling us at +91-63023 95821",
+        "error"
+      );
+    } finally {
+      // Restore button
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+});
+
+// ============================================
 // HEADER SCROLL EFFECT
 // ============================================
 
@@ -296,7 +298,6 @@ window.addEventListener(
   debounce(() => {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Add shadow when scrolled
     if (currentScroll > scrollThreshold) {
       header.classList.add("scrolled");
     } else {
@@ -307,7 +308,6 @@ window.addEventListener(
   }, 10)
 );
 
-// Add scrolled class styles dynamically
 if (!document.querySelector("#header-scroll-styles")) {
   const style = document.createElement("style");
   style.id = "header-scroll-styles";
@@ -337,7 +337,6 @@ const fadeInObserver = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-// Observe elements for fade-in animation
 const animateElements = document.querySelectorAll(
   ".showcase-card, .card, .process-steps li, .service-item, .trust-item, .city-item, .blog-card"
 );
@@ -365,53 +364,26 @@ if ("IntersectionObserver" in window) {
     });
   });
 
-  // Observe elements with data-bg attribute
   const lazyBackgrounds = document.querySelectorAll("[data-bg]");
   lazyBackgrounds.forEach((bg) => lazyImageObserver.observe(bg));
-}
-
-// ============================================
-// DEBOUNCE UTILITY FUNCTION
-// ============================================
-
-function debounce(func, wait = 10, immediate = false) {
-  let timeout;
-  return function executedFunction() {
-    const context = this;
-    const args = arguments;
-
-    const later = function () {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-
-    const callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-
-    if (callNow) func.apply(context, args);
-  };
 }
 
 // ============================================
 // CTA BUTTON CLICK HANDLERS
 // ============================================
 
-// Handle all "Get Estimate" buttons
 const estimateButtons = document.querySelectorAll(
   '.btn-copper:not([type="submit"]), .btn-copper-primary'
 );
 
 estimateButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    // If it's not a form submit button, scroll to hero form
     if (btn.getAttribute("type") !== "submit") {
       e.preventDefault();
       const heroForm = document.querySelector(".hero-form-card");
       if (heroForm) {
         heroForm.scrollIntoView({ behavior: "smooth", block: "center" });
 
-        // Focus on first input after scroll
         setTimeout(() => {
           const firstInput = heroForm.querySelector("input");
           if (firstInput) firstInput.focus();
@@ -436,114 +408,23 @@ referralButtons.forEach((btn) => {
       "Referral program coming soon! Stay tuned for exclusive rewards.",
       "info"
     );
-    // TODO: Replace with actual referral page/modal
   });
 });
-
-// ============================================
-// CONSOLE BRANDING
-// ============================================
-
-console.log(
-  "%cVynex Interiors",
-  "color: #B87350; font-size: 28px; font-weight: bold; font-family: 'Playfair Display', serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);"
-);
-console.log(
-  "%cLuxury Home Interiors • Midnight Navy + Copper Edition",
-  "color: #1B2838; font-size: 13px; font-weight: 600;"
-);
-console.log(
-  "%cBuilt with precision and care",
-  "color: #6B6B6B; font-size: 11px; font-style: italic;"
-);
-
-// ============================================
-// PERFORMANCE MONITORING (OPTIONAL)
-// ============================================
-
-if ("performance" in window) {
-  window.addEventListener("load", () => {
-    const perfData = performance.timing;
-    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-
-    console.log(
-      `%cPage Load Time: ${pageLoadTime}ms`,
-      "color: #10b981; font-weight: 600;"
-    );
-
-    // Log if page load is slow
-    if (pageLoadTime > 3000) {
-      console.warn("Page load time is above 3 seconds. Consider optimization.");
-    }
-  });
-}
-
-// ============================================
-// INITIALIZE ON DOM READY
-// ============================================
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("%c✓ Vynex website loaded successfully", "color: #10b981; font-weight: 600;");
-
-  // Add loaded class to body for CSS transitions
-  document.body.classList.add("loaded");
-
-  // Set current year in footer (if dynamic year element exists)
-  const yearElement = document.querySelector(".current-year");
-  if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
-  }
-
-  // Initialize all animations
-  initializeAnimations();
-
-  // Log active sections count
-  const sections = document.querySelectorAll("section");
-  console.log(`%c${sections.length} sections initialized`, "color: #6B6B6B;");
-});
-
-// ============================================
-// INITIALIZE ANIMATIONS
-// ============================================
-
-function initializeAnimations() {
-  // Add stagger delay to showcase cards
-  const showcaseCards = document.querySelectorAll(".showcase-card");
-  showcaseCards.forEach((card, index) => {
-    card.style.animationDelay = `${index * 0.1}s`;
-  });
-
-  // Add stagger delay to service items
-  const serviceItems = document.querySelectorAll(".service-item");
-  serviceItems.forEach((item, index) => {
-    item.style.animationDelay = `${index * 0.05}s`;
-  });
-
-  // Add stagger delay to trust items
-  const trustItems = document.querySelectorAll(".trust-item");
-  trustItems.forEach((item, index) => {
-    item.style.animationDelay = `${index * 0.15}s`;
-  });
-}
 
 // ============================================
 // FORM INPUT ENHANCEMENTS
 // ============================================
 
-// Phone number formatting (Indian format)
 const phoneInputs = document.querySelectorAll('input[type="tel"]');
 
 phoneInputs.forEach((input) => {
   input.addEventListener("input", (e) => {
-    // Remove non-numeric characters
     let value = e.target.value.replace(/\D/g, "");
 
-    // Limit to 10 digits
     if (value.length > 10) {
       value = value.slice(0, 10);
     }
 
-    // Format as: XXXXX XXXXX
     if (value.length > 5) {
       value = value.slice(0, 5) + " " + value.slice(5);
     }
@@ -551,7 +432,6 @@ phoneInputs.forEach((input) => {
     e.target.value = value;
   });
 
-  // Prevent non-numeric input
   input.addEventListener("keypress", (e) => {
     if (!/\d/.test(e.key) && e.key !== "Backspace" && e.key !== "Delete") {
       e.preventDefault();
@@ -559,14 +439,12 @@ phoneInputs.forEach((input) => {
   });
 });
 
-// Name input: Capitalize first letter
 const nameInputs = document.querySelectorAll('input[name="name"]');
 
 nameInputs.forEach((input) => {
   input.addEventListener("blur", (e) => {
     const value = e.target.value.trim();
     if (value) {
-      // Capitalize first letter of each word
       e.target.value = value
         .split(" ")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -575,7 +453,6 @@ nameInputs.forEach((input) => {
   });
 });
 
-// City input: Capitalize first letter
 const cityInputs = document.querySelectorAll('input[name="city"]');
 
 cityInputs.forEach((input) => {
@@ -588,7 +465,7 @@ cityInputs.forEach((input) => {
 });
 
 // ============================================
-// TRACK SCROLL PROGRESS (OPTIONAL)
+// TRACK SCROLL PROGRESS
 // ============================================
 
 function updateScrollProgress() {
@@ -596,10 +473,6 @@ function updateScrollProgress() {
   const documentHeight = document.documentElement.scrollHeight - windowHeight;
   const scrolled = window.scrollY;
   const progress = (scrolled / documentHeight) * 100;
-
-  // You can use this to show a progress bar
-  // Example: document.querySelector('.progress-bar').style.width = progress + '%';
-
   return progress;
 }
 
@@ -609,7 +482,6 @@ window.addEventListener("scroll", debounce(updateScrollProgress, 50));
 // ACCESSIBILITY ENHANCEMENTS
 // ============================================
 
-// Skip to main content (for keyboard navigation)
 const skipLink = document.createElement("a");
 skipLink.href = "#hero";
 skipLink.className = "skip-link";
@@ -634,17 +506,16 @@ skipLink.addEventListener("blur", () => {
   skipLink.style.top = "-40px";
 });
 
-document.body.prepend(skipLink);
+document.
+body.prepend(skipLink);
 
 // ============================================
 // TRACK USER INTERACTIONS (ANALYTICS)
 // ============================================
 
-// Track button clicks (for analytics)
 function trackEvent(category, action, label) {
-  // TODO: Replace with your analytics solution (Google Analytics, Mixpanel, etc.)
   console.log(`Event Tracked: ${category} - ${action} - ${label}`);
-
+  
   // Example Google Analytics 4
   // if (typeof gtag !== 'undefined') {
   //   gtag('event', action, {
@@ -654,7 +525,6 @@ function trackEvent(category, action, label) {
   // }
 }
 
-// Track CTA button clicks
 document.querySelectorAll(".btn-copper, .btn-copper-primary").forEach((btn) => {
   btn.addEventListener("click", () => {
     const buttonText = btn.textContent.trim();
@@ -662,7 +532,6 @@ document.querySelectorAll(".btn-copper, .btn-copper-primary").forEach((btn) => {
   });
 });
 
-// Track navigation clicks
 document.querySelectorAll(".nav-list a").forEach((link) => {
   link.addEventListener("click", () => {
     const linkText = link.textContent.trim();
@@ -670,22 +539,13 @@ document.querySelectorAll(".nav-list a").forEach((link) => {
   });
 });
 
-// Track form submissions
-document.querySelectorAll(".lead-form").forEach((form) => {
-  form.addEventListener("submit", () => {
-    trackEvent("Form", "submit", "Consultation Form");
-  });
-});
-
 // ============================================
 // DETECT USER PREFERENCES
 // ============================================
 
-// Detect reduced motion preference
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 if (prefersReducedMotion) {
-  // Disable animations for users who prefer reduced motion
   document.documentElement.style.setProperty("--transition-fast", "0s");
   document.documentElement.style.setProperty("--transition-med", "0s");
   console.log("Reduced motion detected - animations disabled");
@@ -697,19 +557,16 @@ if (prefersReducedMotion) {
 
 window.addEventListener("error", (e) => {
   console.error("Global error caught:", e.error);
-  // TODO: Send to error tracking service (Sentry, LogRocket, etc.)
 });
 
 window.addEventListener("unhandledrejection", (e) => {
   console.error("Unhandled promise rejection:", e.reason);
-  // TODO: Send to error tracking service
 });
 
 // ============================================
 // VIEWPORT HEIGHT FIX (FOR MOBILE)
 // ============================================
 
-// Fix for mobile viewport height (100vh issue on mobile browsers)
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -727,7 +584,48 @@ if (window.history.replaceState) {
 }
 
 // ============================================
-// EASTER EGG (OPTIONAL - KONAMI CODE)
+// INITIALIZE ON DOM READY
+// ============================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("%c✓ Vynex website loaded successfully", "color: #10b981; font-weight: 600;");
+
+  document.body.classList.add("loaded");
+
+  const yearElement = document.querySelector(".current-year");
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
+
+  initializeAnimations();
+
+  const sections = document.querySelectorAll("section");
+  console.log(`%c${sections.length} sections initialized`, "color: #6B6B6B;");
+});
+
+// ============================================
+// INITIALIZE ANIMATIONS
+// ============================================
+
+function initializeAnimations() {
+  const showcaseCards = document.querySelectorAll(".showcase-card");
+  showcaseCards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+  });
+
+  const serviceItems = document.querySelectorAll(".service-item");
+  serviceItems.forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.05}s`;
+  });
+
+  const trustItems = document.querySelectorAll(".trust-item");
+  trustItems.forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.15}s`;
+  });
+}
+
+// ============================================
+// EASTER EGG (KONAMI CODE)
 // ============================================
 
 const konamiCode = [
@@ -759,16 +657,44 @@ document.addEventListener("keydown", (e) => {
 function activateEasterEgg() {
   console.log("%c🎉 KONAMI CODE ACTIVATED!", "font-size: 24px; color: #B87350;");
   showNotification("🎉 You found the secret! Enjoy 10% off your consultation!", "success");
-  // Add special styling or unlock features
-  document.body.style.animation = "rainbow 3s linear";
 }
 
 // ============================================
-// EXPORT FUNCTIONS (IF USING MODULES)
+// CONSOLE BRANDING
 // ============================================
 
-// If you're using ES6 modules, export functions you need elsewhere
-// export { showNotification, trackEvent, debounce };
+console.log(
+  "%cVynex Interiors",
+  "color: #B87350; font-size: 28px; font-weight: bold; font-family: 'Playfair Display', serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);"
+);
+console.log(
+  "%cLuxury Home Interiors • Midnight Navy + Copper Edition",
+  "color: #1B2838; font-size: 13px; font-weight: 600;"
+);
+console.log(
+  "%cBuilt with precision and care",
+  "color: #6B6B6B; font-size: 11px; font-style: italic;"
+);
+
+// ============================================
+// PERFORMANCE MONITORING
+// ============================================
+
+if ("performance" in window) {
+  window.addEventListener("load", () => {
+    const perfData = performance.timing;
+    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+
+    console.log(
+      `%cPage Load Time: ${pageLoadTime}ms`,
+      "color: #10b981; font-weight: 600;"
+    );
+
+    if (pageLoadTime > 3000) {
+      console.warn("Page load time is above 3 seconds. Consider optimization.");
+    }
+  });
+}
 
 // ============================================
 // END OF MAIN.JS
