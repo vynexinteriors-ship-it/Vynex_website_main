@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wardrobes Gallery - Vynex Interiors</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231B2838' width='100' height='100'/%3E%3Cpath fill='%23B87350' d='M50 25L75 45H60V65H40V45H25L50 25Z'/%3E%3Crect fill='%23B87350' x='35' y='65' width='30' height='10' rx='2'/%3E%3Ccircle fill='%23D4936F' cx='50' cy='35' r='3'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/gallery.css" />
+</head>
+<body class="gallery-page">
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo-wrap">
+        <a href="../index.html" class="logo-text">Vynex</a>
+      </div>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html#design-gallery">Design Gallery</a></li>
+          <li><a href="../index.html#services">Services</a></li>
+          <li><a href="../index.html#pricing">Pricing</a></li>
+          <li><a href="../index.html#cities">Cities</a></li>
+          <li><a href="../index.html#blog">Blog</a></li>
+          <li><a href="../index.html#referral">Refer &amp; Earn</a></li>
+          <li><a href="../index.html#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="../index.html#pricing" class="btn btn-copper-primary">Get Free Interior Estimate</a>
+      <button class="nav-toggle" id="navToggle">☰</button>
+    </div>
+  </header>
+
+  <section class="breadcrumb">
+    <div class="container">
+      <nav>
+        <a href="../index.html">Home</a>
+        <span>/</span>
+        <a href="../index.html#design-gallery">Gallery</a>
+        <span>/</span>
+        <span>Wardrobes</span>
+      </nav>
+    </div>
+  </section>
+
+  <section class="gallery-header">
+    <div class="container">
+      <h1>Wardrobes</h1>
+      <p>Smart, bespoke wardrobes tailored to the way you live. Explore wardrobe designs that maximize storage and style.</p>
+
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="walk-in">Walk-in</button>
+        <button class="filter-btn" data-filter="fitted">Fitted</button>
+        <button class="filter-btn" data-filter="luxury">Luxury</button>
+        <button class="filter-btn" data-filter="modern">Modern</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <div class="container">
+      <div class="gallery-grid" id="galleryGrid">
+
+        <div class="gallery-item" data-category="walk-in">
+          <img src="https://images.pexels.com/photos/1571459/pexels-photo-1571459.jpeg" alt="Luxury Walk-in Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Luxury Walk-in Wardrobe</h3>
+            <p>Spacious walk-in with island unit and premium lighting for ultimate organization.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Walk-in</span>
+              <span class="tag">Luxury</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="fitted">
+          <img src="https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" alt="Fitted Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Fitted Wardrobe</h3>
+            <p>Custom fitted design with sliding doors and integrated storage solutions.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Fitted</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="modern">
+          <img src="https://images.pexels.com/photos/1743231/pexels-photo-1743231.jpeg" alt="Modern Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Modern Wardrobe</h3>
+            <p>Sleek design with handleless doors and smart organization systems.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Modern</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="walk-in luxury">
+          <img src="https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg" alt="Premium Walk-in Closet" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Premium Walk-in Closet</h3>
+            <p>Full-height storage with dressing area and ambient LED lighting.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Walk-in</span>
+              <span class="tag">Luxury</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="fitted modern">
+          <img src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg" alt="Contemporary Fitted Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Contemporary Fitted Wardrobe</h3>
+            <p>Platform bed integration with built-in storage and clean lines.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Fitted</span>
+              <span class="tag">Modern</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="luxury">
+          <img src="https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg" alt="Luxury Wardrobe Design" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Luxury Wardrobe Design</h3>
+            <p>Premium finishes with brass hardware and custom interior layouts.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Luxury</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="walk-in">
+          <img src="https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg" alt="Spacious Walk-in Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Spacious Walk-in Wardrobe</h3>
+            <p>Generous space with multiple zones for clothes, shoes, and accessories.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Walk-in</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="fitted">
+          <img src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg" alt="Compact Fitted Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Compact Fitted Wardrobe</h3>
+            <p>Space-efficient design with vertical storage and mirror doors.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Fitted</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="modern">
+          <img src="https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg" alt="Minimalist Modern Wardrobe" class="gallery-item-image" />
+          <div class="gallery-item-info">
+            <h3>Minimalist Modern Wardrobe</h3>
+            <p>Clean design with soft-close mechanisms and neutral color palette.</p>
+            <div class="gallery-item-tags">
+              <span class="tag">Modern</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-cta">
+    <div class="container">
+      <h2>Design Your Perfect Wardrobe</h2>
+      <p>Let Vynex create custom storage solutions that fit your lifestyle and space.</p>
+      <a href="../index.html#hero" class="btn-copper">Book Free Design Consultation</a>
+    </div>
+  </section>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+    <div class="lightbox-content">
+      <img src="" alt="" class="lightbox-image" id="lightboxImage" />
+    </div>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h3>About</h3>
+        <ul>
+          <li><a href="#">About Vynex</a></li>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="../index.html#services">Full Home Interiors</a></li>
+          <li><a href="../index.html#services">Modular Kitchens</a></li>
+          <li><a href="../index.html#services">Wardrobes</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="../index.html#blog">Blog</a></li>
+          <li><a href="../index.html#faq">FAQs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Customer Support</h3>
+        <ul>
+          <li><a href="../index.html#trust">Warranty</a></li>
+          <li><a href="../index.html#process">Installation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <ul>
+          <li>Phone: +91-98765-43210</li>
+          <li>Email: hello@vynex.in</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 Vynex Interiors. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../js/gallery.js"></script>
+</body>
+</html>

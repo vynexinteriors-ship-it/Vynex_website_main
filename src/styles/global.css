@@ -1,0 +1,215 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background: var(--vynex-bg);
+  color: var(--vynex-dark);
+}
+
+body {
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Layout helpers */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.section {
+  padding: 3rem 0;
+}
+
+.section.light {
+  background: var(--vynex-grey);
+}
+
+/* Buttons */
+
+.btn-primary {
+  background: var(--vynex-red);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #c62828;
+}
+
+.btn-outline {
+  background: transparent;
+  border-radius: 999px;
+  border: 1px solid var(--vynex-red);
+  padding: 0.6rem 1.4rem;
+  color: var(--vynex-red);
+  cursor: pointer;
+}
+
+/* Typography */
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.75rem 0;
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 0.75rem 0;
+}
+
+/* Responsive grid helpers */
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+/* Cards */
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+}
+
+/* FAQ accordion */
+
+.faq-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  cursor: pointer;
+}
+
+.faq-answer {
+  padding-bottom: 0.75rem;
+  color: #555;
+}
+
+/* Header responsive behaviour */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #eeeeee;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+}
+
+.nav-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none;
+  }
+  .nav-toggle {
+    display: block;
+  }
+  .nav-mobile {
+    display: block;
+    border-top: 1px solid #eeeeee;
+    background: #fff;
+  }
+}
+
+/* Hero responsiveness */
+
+@media (max-width: 900px) {
+  #hero .container {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  #hero-form {
+    width: 100%;
+  }
+}
+
+/* Footer responsiveness */
+
+@media (max-width: 900px) {
+  footer .container > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  footer .container > div {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Responsive grid helpers */
+
+@media (max-width: 768px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .section {
+    padding: 2.25rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-4 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
