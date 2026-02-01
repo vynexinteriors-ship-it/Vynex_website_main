@@ -13,10 +13,13 @@ const header = document.querySelector(".header");
 const navToggle = document.getElementById("navToggle");
 
 if (navToggle && header) {
-  // Toggle navigation on button click
+  navToggle.setAttribute("aria-expanded", "false");
+  navToggle.setAttribute("aria-controls", "nav");
+
   navToggle.addEventListener("click", (e) => {
     e.stopPropagation();
-    header.classList.toggle("nav-open");
+    const isOpen = header.classList.toggle("nav-open");
+    navToggle.setAttribute("aria-expanded", isOpen.toString());
   });
 
   // Close nav when clicking outside
@@ -51,7 +54,15 @@ if (navToggle && header) {
 
 const accordionHeaders = document.querySelectorAll(".accordion-header");
 
-accordionHeaders.forEach((btn) => {
+accordionHeaders.forEach((btn, index) => {
+  const body = btn.nextElementSibling;
+  if (body) {
+    const bodyId = `accordion-body-${index}`;
+    body.id = bodyId;
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-controls", bodyId);
+  }
+
   btn.addEventListener("click", () => {
     const body = btn.nextElementSibling;
     const isOpen = btn.classList.contains("active");
@@ -59,6 +70,7 @@ accordionHeaders.forEach((btn) => {
     // Close all accordions first
     accordionHeaders.forEach((header) => {
       header.classList.remove("active");
+      header.setAttribute("aria-expanded", "false");
       const accordionBody = header.nextElementSibling;
       if (accordionBody) {
         accordionBody.style.maxHeight = null;
@@ -68,6 +80,7 @@ accordionHeaders.forEach((btn) => {
     // Re-open the clicked accordion if it was closed
     if (!isOpen && body) {
       btn.classList.add("active");
+      btn.setAttribute("aria-expanded", "true");
       body.style.maxHeight = body.scrollHeight + "px";
     }
   });
@@ -210,11 +223,20 @@ function debounce(func, wait = 10, immediate = false) {
 // ============================================
 
 // 🔴 REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4sJwP6FEhwQJrs8pkcoyBo26Kf3-JJTmwcD09G5_cxdW3FaGgGbXWoZiX3MUQwl2J/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyE5Fu7UyDl6_S9-v2qGiyCfVuAGyzPJ1O920gJoQ0Pyzg9xRJMs3TR8HXt_TbFbi4q/exec';
 
 const leadForms = document.querySelectorAll(".lead-form");
 
 leadForms.forEach((form) => {
+  // Add ARIA labels for accessibility
+  const nameInput = form.querySelector('input[name="name"]');
+  const phoneInput = form.querySelector('input[name="phone"]');
+  const cityInput = form.querySelector('input[name="city"]');
+
+  if (nameInput) nameInput.setAttribute("aria-label", "Full Name");
+  if (phoneInput) phoneInput.setAttribute("aria-label", "Phone Number");
+  if (cityInput) cityInput.setAttribute("aria-label", "City");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -230,7 +252,7 @@ leadForms.forEach((form) => {
       return;
     }
 
-    if (phone.length !== 10 || !/^[6-9]/.test(phone)) {
+    if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
       showNotification("Please enter a valid 10-digit phone number", "error");
       return;
     }
@@ -247,8 +269,10 @@ leadForms.forEach((form) => {
     submitBtn.textContent = "Submitting...";
 
     try {
-      // Send to Google Sheets
-      await fetch(GOOGLE_SCRIPT_URL, {
+      // Send to Google Sheets as JSON (matches your Apps Script)
+      // Note: Using 'no-cors' mode restricts response access but allows the request.
+      // Ensure your Google Apps Script is configured to handle CORS properly.
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -263,7 +287,7 @@ leadForms.forEach((form) => {
         })
       });
 
-      // Success message
+      // With 'no-cors', we can't check response.ok, so assume success if no error thrown
       showNotification(
         `Thank you, ${name}! We'll contact you shortly at ${phone} regarding your ${city} project.`,
         "success"
@@ -273,7 +297,7 @@ leadForms.forEach((form) => {
       form.reset();
 
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Form submission error:', error);
       showNotification(
         "Something went wrong. Please try calling us at +91-63023 95821",
         "error"
@@ -506,8 +530,7 @@ skipLink.addEventListener("blur", () => {
   skipLink.style.top = "-40px";
 });
 
-document.
-body.prepend(skipLink);
+document.body.prepend(skipLink);
 
 // ============================================
 // TRACK USER INTERACTIONS (ANALYTICS)
@@ -703,3 +726,4 @@ if ("performance" in window) {
 console.log("%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "color: #B87350;");
 console.log("%cVynex Interiors • All systems operational", "color: #10b981; font-weight: 600;");
 console.log("%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "color: #B87350;");
+
